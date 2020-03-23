@@ -25,9 +25,13 @@ In this way, we can use these pointers to access any value in the list. If we wa
 
 ![Traversing the modified list to find 91](https://github.com/benjdod/datastructures/blob/master/resources/skiplist_mp_traverse1.svg)
 
-In a nutshell, this is the idea behind a skip list. Each value has a certain number of pointers, which make up different levels which we can use to move through the list. The higher a level is, the less "pointer-dense" it is. So when we traverse, we begin jumping in the highest level where we can cover the most ground per jump, descend a level when we reach an impasse, and repeat.
+In a nutshell, this is the idea behind a skip list. Each value has a certain number of pointers, which make up different levels which we can use to move through the list. 
 
 ![A small skip list](https://github.com/benjdod/datastructures/blob/master/resources/skiplist_sl_simple.svg)
+
+The higher a level is, the less "pointer-dense" it is. So when we traverse, we begin jumping in the highest level where we can cover the most ground per jump, descend a level when we reach an impasse, and repeat.
+
+![Traversing a skip list](https://github.com/benjdod/datastructures/blob/master/resources/skiplist_sl_traverse1.svg)
 
 Now why is a skiplist called probabilistic? Hopefully not becase it only has a chance of actually working. The reason is that we leave determining the number of pointers for a value to the hands of chance. The way this is done with skip lists is to do the computer version of flipping a coin until we get a tails and counting how many times we flipped it.
 
