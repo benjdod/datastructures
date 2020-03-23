@@ -7,7 +7,7 @@ What a skip list does is shorten the path to a value by decreasing the number of
 
 For illustration, let's imagine we have a series of values in a list:
 
-!(Image of Yaktocat)[https://octodex.github.com/images/yaktocat.png]
+![Linked List simple](https://github.com/benjdod/datastructures/blob/master/resources/skiplist_linked_simple.svg)
 
 Let's imagine we wanted to see if the list contains the value 141. In that case, we would have to jump from 2 to 5 to 17 and so on until we either found 141 (141 is in the list) or a number greater than 141 (141 isn't in the list). 
 
