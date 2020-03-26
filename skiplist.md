@@ -1,8 +1,8 @@
 ## Understanding Skip Lists
 
-Let's imagine we were to use a linked list to store data. If we wanted to access an entry in that list, we would have to start at the beginning and jump from one node to the next until we found our item. This operation is pretty quick if your item is towards the front of the list, but if it's at the back, the whole thing gets pretty expensive pretty quick. As we know, the time complexity of traversing a linked list is O(n), which could be less than ideal for some uses. 
+Let's imagine we were to use a sorted linked list to store data. If we wanted to access an entry in that list, we would have to start at the beginning and jump from one node to the next until we found our item. This operation is pretty quick if your item is towards the front of the list, but if it's at the back, the whole thing gets pretty expensive pretty quick. As we know, the time complexity of traversing a linked list is O(n), which could be less than ideal for some uses. 
 
-A skip list is eseentially an elaboration on the idea of a linked list which allows for quicker traversal. It does this by decreasing the number of jumps we have to make to get there. Instead of having just one pointer for each data item in the list, it has multiple, which point to different spots along the list. 
+A skip list is essentially an elaboration on the idea of a linked list which allows for quicker traversal. It does this by decreasing the number of jumps we have to make to get there. Instead of having just one pointer for each data item in the list, it has multiple, which point to different spots along the list. 
 
 For illustration, let's imagine we have a series of items in a linked list:
 
@@ -24,17 +24,21 @@ In this way, we can use these pointers to access any item in the list. If we wan
 
 ![Traversing the modified list to find 91](https://github.com/benjdod/datastructures/blob/master/resources/skiplist/mp_traverse1.svg)
 
-In a nutshell, this is the idea behind a skip list. 
-
-![A small skip list](https://github.com/benjdod/datastructures/blob/master/resources/skiplist/sl_simple.svg)
-
-A skip list has up to O(log(n)) levels of pointers, each higher level having half the number of pointers than the previous level. Thus, the higher a level is, the less "pointer-dense" it is. So when we traverse, we begin jumping in the highest level where we can cover the most ground per jump, descend a level when we reach an impasse, and repeat.
+In a nutshell, this is the idea behind a skip list. A skip list has O(log(n)) levels of pointers, each level having half the number of pointers than the previous level. Thus, the higher a level is, the less "pointer-dense" it is. So when we traverse, we begin jumping in the highest level where we can cover the most ground per jump, descend a level when we reach an impasse, and repeat.
 
 ![Traversing a skip list](https://github.com/benjdod/datastructures/blob/master/resources/skiplist/sl_traverse1.svg)
 
-In a perfect skip list, each level has half as many pointers as the one below it, and the items are sorted. Thus, if perfectly arranged, it guarantees an access time of *O(log(n))*. 
+As mentioned, in a perfect skip list, each level has half as many pointers as the one below it, and the items are sorted. Thus, if perfectly arranged, it guarantees an access time of *O(log(n))*. 
 
-*Wait, why O(log(n)) for everything?*
+*But why O(log(n)) for everything?*
+
+In the ideal skip list, each level has exactly half as many pointers as the one below it. For a list with *n* elements, level 0 would have n pointers, level 1 would have n/2 pointers, level 2 would have n/4 pointers, and so on. In visual terms, we'd expect something like:
+
+![Vertical lines representing the pointer stacks in an ideal skip list](https://github.com/benjdod/datastructures/blob/master/resources/skiplist/sl_pointers_blank.svg)
+
+What would be the worst access we could want to do on this structure? Clearly it would be the element right before the end. So if we make that access, we get:
+
+![Accessing the next to last pointer stack in the above list](https://github.com/benjdod/datastructures/blob/master/resources/skiplist/sl_pointers_worstaccess.svg)
 
 Why is a skiplist called probabilistic? Hopefully not becase it only has a chance of actually working. The reason is that we leave determining the number of pointers for a item to the hands of chance. The way this is done with skip lists is to do the computer version of flipping a coin until we get a tails and counting how many times we flipped it.
 
