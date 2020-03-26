@@ -30,7 +30,7 @@ In a nutshell, this is the idea behind a skip list. A skip list has O(log(n)) le
 
 As mentioned, in a perfect skip list, each level has half as many pointers as the one below it, and the items are sorted. Thus, if perfectly arranged, it guarantees an access time of *O(log(n))*. 
 
-*But why O(log(n)) for everything?*
+***But why O(log(n)) for everything?***
 
 In the ideal skip list, each level has exactly half as many pointers as the one below it. For a list with *n* elements, level 0 would have n pointers, level 1 would have n/2 pointers, level 2 would have n/4 pointers, and so on. In visual terms, we'd expect something like:
 
@@ -38,18 +38,51 @@ In the ideal skip list, each level has exactly half as many pointers as the one 
 
 What would be the worst access we could want to do on this structure? Clearly it would be the element right before the end. So if we make that access, we get:
 
-![Accessing the next to last pointer stack in the above list](https://github.com/benjdod/datastructures/blob/master/resources/skiplist/sl_pointers_worstaccess.svg)
+![Accessing the next to last pointer stack in the above list](https://github.com/benjdod/datastructures/blob/master/resources/skiplist/sl_pointers_worstaccess16.svg)
 
-Why is a skiplist called probabilistic? Hopefully not becase it only has a chance of actually working. The reason is that we leave determining the number of pointers for a item to the hands of chance. The way this is done with skip lists is to do the computer version of flipping a coin until we get a tails and counting how many times we flipped it.
+Where *log<sub>2</sub>(16) = 4*. If we use a subset of this structure, we still see the same logarithmic behavior.
+
+![Accessing the next to last pointer stack in half of the above list](https://github.com/benjdod/datastructures/blob/master/resources/skiplist/sl_pointers_worstaccess8.svg)
+
+Of course, these logarithmic access times require perfect list structure, which could necessitate complete list rearrangement on an insertion.
+
+So instead, skip lists use randomization to determine the number of pointers for each element. If you flip a coin, the probability that it will be heads is 1/2, as is the probability for tails. Flip it again, and the probability of getting two heads in a row is 1/4. Keep flipping until you get a tails, and then count how many times you flipped. If you use this strategy to determine the height of all your elements' pointer stacks, you'll get around 1/2 of them with two levels, 1/4 of them with three levels, and so on.
 
 ```
-int n = 0;
+int n = 1;            start with one level
 while (randbool()) {
-    n++;
+    n++;              and then flip the coin
 }
 ```
 
-Using this method of generating skip lists, the time complexity for accessing stays near *O(log(n))*. Of course, this is not guaranteed. If our coin-flipping mechanism were to immediately flip tails every time and give us one big linked list in the bottom layer, our time complexity would be O(n), but the likelihood of getting this "degenerate case" is so low as to be practically impossible. 
+This strategy will give you about the same *O(log(n))* performance in access as if you managed the structure of the list with an authoritative hand, but with much better performance for insertion. 
+
+To understand that, let's consider it a different way. Consider that you want to go backwards from an element in a list to the root node and count the number of steps you have to take. When travelling backwards, you always want to go up as high as possible in the current node, as that's how you would have entered it. Since each subsequent level has half the number of pointers, the probability that you can move up a level in any given node is 1/2, and the probability that you can't is also 1/2. So if you want to move up *i* levels, you can sum up the number of steps required with a cool little formula:
+
+
+&nbsp;&nbsp;&nbsp;&nbsp;*C(i) = 1 + 0.5*C(i) + 0.5*C(i-1)* 
+
+Doubling it gives us:
+
+&nbsp;&nbsp;&nbsp;&nbsp;*2C(i) = 2 + C(i) + C(i-1)* 
+
+Which can be reduced to:
+
+&nbsp;&nbsp;&nbsp;&nbsp;*C(i) = 2 + C(i-1)* 
+
+Notice that the formula is recursive, which means we can expand it out. We know that once we hit 0 levels to climb, we're done recursing. In math terms, this means *C(0) = 0* So expanding gives us:
+
+&nbsp;&nbsp;&nbsp;&nbsp;*C(i) = 2 + C(i-1)* <br>
+&nbsp;&nbsp;&nbsp;&nbsp;*C(i) = 2 + (2 + C(i-2))* <br>
+&nbsp;&nbsp;&nbsp;&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;*C(i) = 2 + (2 + (2 + ( ... ( 2 + C(0))) ... ))* <br>
+&nbsp;&nbsp;&nbsp;&nbsp;*C(i) = 2i* <br>
+
+Since the list has *O(log(n))* levels, the time complexity for access is also *O(log(n))*.
+
+Of course, this access time is not 100% guaranteed. If our coin-flipping mechanism were to just flip tails every time, we'd get one big linked list in the bottom layer and a time complexity of *O(n)* But the likelihood of this actually happening gets lower and lower as more elements are added, and eventually becomes so small that we don't have to worry about it.
+
+&nbsp;&nbsp;&nbsp;&nbsp;*0.5 \* 0.5 \* 0.5 \* ... = some crazy small number* <br>
 
 ### Tradeoffs
 
